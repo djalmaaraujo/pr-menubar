@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/single-swift%20file-22d3ee?style=flat-square" alt="single swift file">
+  <img src="https://img.shields.io/badge/native-swift-22d3ee?style=flat-square" alt="native swift">
   <img src="https://img.shields.io/badge/dependencies-zero-6366f1?style=flat-square" alt="zero dependencies">
   <img src="https://img.shields.io/badge/needs-gh%20cli-38bdf8?style=flat-square" alt="needs gh cli">
   <img src="https://img.shields.io/badge/license-MIT-94a3b8?style=flat-square" alt="MIT license">
@@ -39,15 +39,30 @@ No cookies, no OAuth flow of its own, no server. It shells out to the `gh` binar
 - **Clear failure state** — if `gh` isn't installed, isn't logged in, or you're offline, the popover shows the exact fix and a Retry button instead of spinning forever, and the menu bar icon swaps to a warning triangle.
 - **Refreshes on its own** — every 60 seconds, plus a manual refresh button whenever you want it now.
 
-## Requirements
+## Dependencies
 
-- macOS 13 or later
-- Xcode Command Line Tools (`xcode-select --install`) — for `swiftc`
-- [GitHub CLI](https://cli.github.com) installed and logged in — `gh` on your `PATH`, `gh auth login` done
+**Runtime**
 
-No other dependencies — one Swift file, SwiftUI + AppKit only.
+- **[GitHub CLI](https://cli.github.com) (`gh`)** — required. PR Bar shells out to it for every call, so install it and run `gh auth login` once.
+- **macOS 13 or later**, Apple silicon.
+
+**Bundled with macOS — no third-party libraries**
+
+- **SwiftUI** and **AppKit** — the whole UI.
+
+**Build only**
+
+- **Xcode Command Line Tools** (`xcode-select --install`) — for `swiftc`.
+
+No Swift packages, no CocoaPods, nothing vendored. Two Swift source files compiled directly.
 
 ## Install
+
+### Homebrew (recommended)
+
+```bash
+brew install djalmaaraujo/tap/pr-menubar
+```
 
 ### Build from source
 

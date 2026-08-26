@@ -1,0 +1,19 @@
+app/App.swift
+  s_3960be77cd17dc::t_ed3eb3f8956234 551
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "93ef8b4ea4aad20dc6f3a0de33c0ee9753640fbb",
+  "prompts": {},
+  "sessions": {
+    "s_3960be77cd17dc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a9f947c8-317a-4cfe-af1b-9f76a4382119",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Djalma Araújo <djalma@nossomos.cc>"
+    }
+  }
+}

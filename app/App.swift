@@ -176,14 +176,19 @@ final class PRStore: ObservableObject {
         }
     }
 
+    // Last-seen results per owner. Switching shows the cached list instantly and
+    // refreshes on top of it, so you never fall back to a blank loading screen
+    // for an org you've already looked at this session.
+    private var cache: [String: [PullRequest]] = [:]
+
     func select(_ owner: String) {
         guard owner != selectedOwner else { return }
         selectedOwner = owner
         UserDefaults.standard.set(owner, forKey: "selectedOwner")
-        // Drop the previous owner's list right away so the popover shows a
-        // loading state, not stale results from the org we just left.
-        prs = []
         errorText = nil
+        // Show what we last saw for this owner (if anything) while the fresh
+        // load runs; otherwise keep the current list rather than blanking.
+        if let cached = cache[owner] { prs = cached }
         refresh()
     }
 
@@ -200,6 +205,7 @@ final class PRStore: ObservableObject {
                 let search = try await Self.search(owner: owner)
                 let details = try await Self.enrich(search)
 
+                self.cache[owner] = details
                 // A newer refresh started while we were awaiting — let it win.
                 guard coordinator.mayApply(gen) else { return }
 
@@ -213,7 +219,11 @@ final class PRStore: ObservableObject {
                 self.lastUpdated = Date()
             } catch {
                 guard coordinator.mayApply(gen) else { return }
-                self.errorText = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+                // Keep the cached list on screen; only surface the error if we
+                // have nothing to show for this owner.
+                if prs.isEmpty {
+                    self.errorText = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+                }
             }
             if coordinator.mayApply(gen) { self.isLoading = false }
         }
@@ -296,44 +306,71 @@ actor BoundedCounter {
 struct PRRow: View {
     let pr: PullRequest
     let depth: Int
+    @State private var hovering = false
 
     var body: some View {
         Button {
             if let url = URL(string: pr.url) { NSWorkspace.shared.open(url) }
         } label: {
-            HStack(spacing: 8) {
-                if depth > 0 {
-                    HStack(spacing: 0) {
-                        ForEach(0..<depth, id: \.self) { _ in
-                            Text("│").foregroundColor(.secondary.opacity(0.4))
-                                .frame(width: 10, alignment: .leading)
-                        }
-                        Image(systemName: "arrow.turn.down.right")
-                            .font(.system(size: 9))
-                            .foregroundColor(.secondary.opacity(0.6))
-                    }
-                }
-                Circle().fill(pr.rowState.color).frame(width: 7, height: 7)
+            HStack(spacing: 11) {
+                if depth > 0 { indent }
+
+                Circle().fill(pr.rowState.color)
+                    .frame(width: 8, height: 8)
+                    .overlay(Circle().stroke(pr.rowState.color.opacity(0.25), lineWidth: 3))
                     .help(pr.rowState.label)
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(pr.title).lineLimit(1).font(.system(size: 12, weight: .medium))
-                    HStack(spacing: 4) {
-                        Text("#\(pr.number)").foregroundColor(.secondary)
-                        Text("·").foregroundColor(.secondary)
-                        Text(pr.repo).foregroundColor(.secondary).lineLimit(1)
-                    }.font(.system(size: 10))
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(pr.title)
+                        .lineLimit(1)
+                        .font(.system(size: 13, weight: .semibold))
+                    HStack(spacing: 6) {
+                        Text(verbatim: "#\(pr.number)")
+                            .monospacedDigit()
+                            .foregroundColor(pr.ci.color.opacity(0.9))
+                        Text(pr.repo)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    }
+                    .font(.system(size: 11))
                 }
-                Spacer(minLength: 4)
+
+                Spacer(minLength: 6)
+
                 Image(systemName: pr.ci.glyph)
+                    .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(pr.ci.color)
-                    .font(.system(size: 12))
+                    .frame(width: 24, height: 24)
+                    .background(pr.ci.color.opacity(0.12))
+                    .clipShape(Circle())
                     .help(pr.ci.help)
             }
-            .padding(.vertical, 3)
-            .padding(.horizontal, 8)
+            .padding(.vertical, 8)
+            .padding(.horizontal, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 9)
+                    .fill(Color.primary.opacity(hovering ? 0.07 : 0))
+            )
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .padding(.horizontal, 6)
+        .onHover { hovering = $0 }
+    }
+
+    private var indent: some View {
+        HStack(spacing: 0) {
+            ForEach(0..<depth, id: \.self) { _ in
+                Rectangle().fill(Color.secondary.opacity(0.25))
+                    .frame(width: 1.5)
+                    .frame(maxHeight: .infinity)
+                    .frame(width: 13, alignment: .center)
+            }
+            Image(systemName: "arrow.turn.down.right")
+                .font(.system(size: 10))
+                .foregroundColor(.secondary.opacity(0.7))
+        }
+        .fixedSize(horizontal: true, vertical: false)
     }
 }
 
@@ -342,13 +379,37 @@ struct ContentView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            titleBar
             header
             Divider()
             content
             Divider()
             footer
         }
-        .frame(width: 380)
+        .frame(width: 400)
+    }
+
+    private var titleBar: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "arrow.triangle.pull")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundColor(Color(red: 0.39, green: 0.40, blue: 0.95))
+            Text("Pull Requests")
+                .font(.system(size: 13, weight: .bold))
+            Spacer()
+            if store.openCount > 0 {
+                Text(verbatim: "\(store.openCount)")
+                    .font(.system(size: 11, weight: .semibold))
+                    .monospacedDigit()
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(Color(red: 0.39, green: 0.40, blue: 0.95).opacity(0.15))
+                    .clipShape(Capsule())
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.top, 12)
+        .padding(.bottom, 6)
     }
 
     private var canFavorite: Bool { store.selectedOwner != allOwnersSentinel }
@@ -420,13 +481,14 @@ struct ContentView: View {
             .frame(maxWidth: .infinity)
         } else {
             ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
+                LazyVStack(alignment: .leading, spacing: 2) {
                     ForEach(store.forest, id: \.pr.id) { item in
                         PRRow(pr: item.pr, depth: item.depth)
                     }
                 }
+                .padding(.vertical, 6)
             }
-            .frame(maxHeight: 420)
+            .frame(maxHeight: 440)
         }
     }
 

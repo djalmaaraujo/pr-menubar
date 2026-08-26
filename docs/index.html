@@ -139,7 +139,7 @@
     <p class="tagline" style="margin: 0 auto;">Reads straight from the <code class="inline">gh</code> CLI on your machine — no token of its own, no server, no browser cookie.</p>
 
     <div class="install-row">
-      <code id="install-cmd">git clone https://github.com/djalmaaraujo/pr-menubar &amp;&amp; cd pr-menubar/app &amp;&amp; ./build.sh</code>
+      <code id="install-cmd">brew install djalmaaraujo/tap/pr-menubar</code>
       <button class="copy-btn" onclick="copyInstall()">Copy</button>
     </div>
 
@@ -188,12 +188,16 @@
 
   <section>
     <h2>Install</h2>
-    <p>Build from source — one script:</p>
+    <p>Homebrew, on Apple silicon:</p>
     <div class="install-row">
-      <code>git clone https://github.com/djalmaaraujo/pr-menubar &amp;&amp; cd pr-menubar/app &amp;&amp; ./build.sh</code>
+      <code>brew install djalmaaraujo/tap/pr-menubar</code>
       <button class="copy-btn" onclick="copyInstall()">Copy</button>
     </div>
-    <p style="margin-top: 24px;">Compiles, packages <code class="inline">PRBar.app</code>, ad-hoc signs it, and opens it. Drag it into <code class="inline">/Applications</code> to keep it around.</p>
+    <p style="margin-top: 24px;">Or build from source:</p>
+    <div class="install-row">
+      <code>git clone https://github.com/djalmaaraujo/pr-menubar &amp;&amp; cd pr-menubar/app &amp;&amp; ./build.sh</code>
+    </div>
+    <p style="margin-top: 24px;">The build script compiles, packages <code class="inline">PRBar.app</code>, ad-hoc signs it, and opens it. Drag it into <code class="inline">/Applications</code> to keep it around.</p>
   </section>
 
   <section>

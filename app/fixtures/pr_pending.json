@@ -1,0 +1,1 @@
+{"number":68,"title":"CI running","url":"https://github.com/o/r/pull/68","isDraft":true,"reviewDecision":null,"headRefName":"feat/z","baseRefName":"main","statusCheckRollup":[{"__typename":"CheckRun","status":"IN_PROGRESS","conclusion":null,"name":"a"},{"__typename":"StatusContext","state":"PENDING","name":"legacy"}]}

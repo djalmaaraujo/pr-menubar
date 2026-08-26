@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PR Bar — your open pull requests, live in the menu bar</title>
+<meta name="description" content="A native macOS menu bar app that lists your open GitHub pull requests. Reads from the gh CLI you already have. Zero dependencies, free and open source.">
+<style>
+  :root {
+    --bg-start: #0f172a;
+    --bg-end: #1e1b4b;
+    --accent-a: #22d3ee;
+    --accent-b: #6366f1;
+    --accent-c: #38bdf8;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --font: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--font);
+    color: var(--text);
+    background: linear-gradient(160deg, var(--bg-start), var(--bg-end));
+    background-attachment: fixed;
+    line-height: 1.6;
+  }
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  section {
+    padding: 96px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  }
+  section:last-of-type { border-bottom: none; }
+  h1 {
+    font-size: clamp(2rem, 4.2vw, 2.8rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 32px 0 16px;
+  }
+  h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0 0 32px;
+  }
+  p { color: var(--text-dim); font-size: 1.05rem; }
+  .tagline { font-size: 1.2rem; color: var(--text-dim); max-width: 580px; }
+  .accent {
+    background: linear-gradient(90deg, var(--accent-a), var(--accent-b));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero { text-align: center; padding-top: 120px; }
+  .hero img.logo { width: min(480px, 90vw); height: auto; }
+  .install-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 40px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 10px;
+    padding: 14px 20px;
+  }
+  .install-row code { color: var(--text); font-size: 0.95rem; }
+  .copy-btn {
+    font-family: var(--font);
+    background: linear-gradient(90deg, var(--accent-a), var(--accent-b));
+    color: #0f172a;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .copy-btn:active { opacity: 0.85; }
+  .links { margin-top: 24px; }
+  .links a { color: var(--text-dim); text-decoration: none; margin: 0 12px; border-bottom: 1px solid transparent; }
+  .links a:hover { color: var(--text); border-bottom-color: var(--accent-a); }
+  .hero-shot {
+    display: block;
+    width: min(760px, 90vw);
+    margin: 40px auto 48px;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  }
+  .stats { color: var(--text-dim); font-size: 0.9rem; margin-top: 20px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  .card {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .card h3 { margin: 0 0 10px; font-size: 1.05rem; color: var(--text); }
+  .card .dot {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+    background: linear-gradient(90deg, var(--accent-a), var(--accent-b));
+  }
+  .card p { margin: 0; font-size: 0.98rem; }
+  ul.limits { color: var(--text-dim); padding-left: 20px; }
+  ul.limits li { margin-bottom: 10px; }
+  .faq-item { margin-bottom: 32px; }
+  .faq-item h3 { font-size: 1.05rem; margin: 0 0 8px; color: var(--text); }
+  .faq-item p { margin: 0; }
+  code.inline { color: var(--accent-c); }
+  footer {
+    text-align: center;
+    padding: 64px 0 96px;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+  footer a { color: var(--text-dim); }
+</style>
+</head>
+<body>
+<main>
+
+  <section class="hero">
+    <img class="logo" src="assets/logo.svg" alt="PR Bar logo">
+    <h1>Your open pull requests,<br><span class="accent">live in the menu bar.</span></h1>
+
+    <img class="hero-shot" src="assets/screenshot-main.png" alt="PR Bar popover open in the menu bar, listing open pull requests with state, repository, and CI status">
+
+    <p class="tagline" style="margin: 0 auto;">Reads straight from the <code class="inline">gh</code> CLI on your machine — no token of its own, no server, no browser cookie.</p>
+
+    <div class="install-row">
+      <code id="install-cmd">git clone https://github.com/djalmaaraujo/pr-menubar &amp;&amp; cd pr-menubar/app &amp;&amp; ./build.sh</code>
+      <button class="copy-btn" onclick="copyInstall()">Copy</button>
+    </div>
+
+    <div class="links">
+      <a href="https://github.com/djalmaaraujo/pr-menubar">GitHub</a>
+      <a href="https://github.com/djalmaaraujo/pr-menubar#build-from-source">Build from source</a>
+    </div>
+
+    <p class="stats">Fully native — no Electron · single Swift file · &lt;30MB memory</p>
+  </section>
+
+  <section>
+    <h2>What you get</h2>
+    <div class="grid">
+      <div class="card">
+        <h3><span class="dot"></span>Every PR, one row each</h3>
+        <p>State, title, number, <code class="inline">owner/repo</code>, and a CI rollup glyph — pass, fail, pending, or none. Click a row to open the PR in your browser.</p>
+      </div>
+      <div class="card">
+        <h3><span class="dot"></span>Filter by org or account</h3>
+        <p>A dropdown built from the orgs you can reach, your personal account, and an "All" option. Private-membership orgs show up too, picked up from your actual PRs.</p>
+      </div>
+      <div class="card">
+        <h3><span class="dot"></span>Stacked PRs as a tree</h3>
+        <p>When one PR is based on another's branch, the chain renders indented with a vertical guide — a whole stack readable at a glance.</p>
+      </div>
+      <div class="card">
+        <h3><span class="dot"></span>Count in the menu bar</h3>
+        <p>The icon carries the number of open PRs in the current filter. Hidden when it's zero, so an empty queue stays quiet.</p>
+      </div>
+      <div class="card">
+        <h3><span class="dot"></span>Clear failure state</h3>
+        <p>If <code class="inline">gh</code> is missing, logged out, or offline, the popover shows the exact fix and a Retry button — and the icon becomes a warning triangle.</p>
+      </div>
+      <div class="card">
+        <h3><span class="dot"></span>Refreshes on its own</h3>
+        <p>Every 60 seconds, plus a manual refresh whenever you want it right now. No configuration, no background daemon.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <p>PR Bar shells out to the <code class="inline">gh</code> binary you already have installed and authenticated. It runs <code class="inline">gh search prs --author=@me --state=open</code> to list your PRs, then enriches each one with <code class="inline">gh pr view</code> for its CI status and branch names. Nothing else talks to GitHub, and the credentials are entirely <code class="inline">gh</code>'s own.</p>
+  </section>
+
+  <section>
+    <h2>Install</h2>
+    <p>Build from source — one script:</p>
+    <div class="install-row">
+      <code>git clone https://github.com/djalmaaraujo/pr-menubar &amp;&amp; cd pr-menubar/app &amp;&amp; ./build.sh</code>
+      <button class="copy-btn" onclick="copyInstall()">Copy</button>
+    </div>
+    <p style="margin-top: 24px;">Compiles, packages <code class="inline">PRBar.app</code>, ad-hoc signs it, and opens it. Drag it into <code class="inline">/Applications</code> to keep it around.</p>
+  </section>
+
+  <section>
+    <h2>Requirements &amp; limitations</h2>
+    <ul class="limits">
+      <li>macOS 13 or later.</li>
+      <li>Xcode Command Line Tools (<code class="inline">xcode-select --install</code>) for <code class="inline">swiftc</code>.</li>
+      <li>The <a href="https://cli.github.com" style="color: var(--text-dim);">GitHub CLI</a> installed and logged in — this app has no login flow of its own, it reads the session <code class="inline">gh</code> already has.</li>
+      <li>Lists PRs <em>you authored</em> (<code class="inline">--author=@me</code>), open state only — no review-requested, assigned, or closed history.</li>
+      <li>macOS only. No Linux or Windows, and not a hosted service — everything runs locally.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>FAQ</h2>
+
+    <div class="faq-item">
+      <h3>Does it need a GitHub token of its own?</h3>
+      <p>No. It uses the <code class="inline">gh</code> CLI's existing authentication — run <code class="inline">gh auth login</code> once and you're set.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Does anything leave my machine?</h3>
+      <p>Only the GitHub API calls <code class="inline">gh</code> already makes on your behalf. No server, no analytics, no third party.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Does it work on Linux or Windows?</h3>
+      <p>No, macOS only (13+).</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Does it cost anything?</h3>
+      <p>Completely free and open source (MIT).</p>
+    </div>
+  </section>
+
+  <footer>
+    <a href="https://github.com/djalmaaraujo/pr-menubar">github.com/djalmaaraujo/pr-menubar</a><br>
+    MIT License
+  </footer>
+
+</main>
+<script>
+  function copyInstall() {
+    navigator.clipboard.writeText("git clone https://github.com/djalmaaraujo/pr-menubar && cd pr-menubar/app && ./build.sh");
+  }
+</script>
+</body>
+</html>

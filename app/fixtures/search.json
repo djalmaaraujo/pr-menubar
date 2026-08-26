@@ -1,0 +1,6 @@
+[
+  {"number":10,"title":"Base feature","isDraft":false,"repository":{"nameWithOwner":"acme/web"}},
+  {"number":11,"title":"Stacked on base","isDraft":false,"repository":{"nameWithOwner":"acme/web"}},
+  {"number":12,"title":"Top of stack","isDraft":true,"repository":{"nameWithOwner":"acme/web"}},
+  {"number":5,"title":"Solo fix","isDraft":false,"repository":{"nameWithOwner":"personal/dotfiles"}}
+]

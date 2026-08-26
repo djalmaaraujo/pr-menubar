@@ -1,0 +1,1 @@
+{"number":67,"title":"CI red","url":"https://github.com/o/r/pull/67","isDraft":false,"reviewDecision":"CHANGES_REQUESTED","headRefName":"feat/y","baseRefName":"main","statusCheckRollup":[{"__typename":"CheckRun","status":"COMPLETED","conclusion":"SUCCESS","name":"a"},{"__typename":"CheckRun","status":"COMPLETED","conclusion":"FAILURE","name":"b"}]}

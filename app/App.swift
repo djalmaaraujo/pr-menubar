@@ -111,10 +111,20 @@ enum GH {
                     DispatchQueue.global().asyncAfter(deadline: .now() + 20) {
                         if process.isRunning { process.terminate() }
                     }
-                    // Drain before waiting: a full pipe buffer would otherwise
-                    // deadlock the child against us.
+                    // Drain both pipes concurrently before waiting: reading one
+                    // to EOF and only then the other would deadlock if the child
+                    // fills the second pipe's buffer while blocked, since its EOF
+                    // never comes until it exits.
+                    var errData = Data()
+                    let errHandle = err.fileHandleForReading
+                    let drain = DispatchGroup()
+                    drain.enter()
+                    DispatchQueue.global(qos: .utility).async {
+                        errData = errHandle.readDataToEndOfFile()
+                        drain.leave()
+                    }
                     let data = out.fileHandleForReading.readDataToEndOfFile()
-                    let errData = err.fileHandleForReading.readDataToEndOfFile()
+                    drain.wait()
                     process.waitUntilExit()
                     if process.terminationStatus != 0 {
                         let msg = String(data: errData, encoding: .utf8) ?? ""
@@ -174,6 +184,11 @@ final class PRStore: ObservableObject {
         timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.refresh() }
         }
+    }
+
+    deinit {
+        timer?.invalidate()
+        refreshTask?.cancel()
     }
 
     // Last-seen results per owner. Switching shows the cached list instantly and

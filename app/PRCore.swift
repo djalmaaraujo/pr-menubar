@@ -126,6 +126,19 @@ func mergeOwners(orgs: [String], resultOwners: [String], myLogin: String?) -> [S
     return [allOwnersSentinel] + set.sorted { $0.lowercased() < $1.lowercased() }
 }
 
+// Reorder the dropdown so favorites are quick to reach: "All" stays pinned
+// first, then favorited owners (in the list's existing order), then the rest.
+// Favorites not present in `owners` (e.g. an org with no open PRs right now)
+// are still surfaced so the choice never disappears.
+func orderOwners(_ owners: [String], favorites: [String]) -> [String] {
+    let fav = Set(favorites)
+    let present = owners.filter { $0 != allOwnersSentinel }
+    let favInList = present.filter { fav.contains($0) }
+    let missingFavs = favorites.filter { !present.contains($0) && $0 != allOwnersSentinel }
+    let rest = present.filter { !fav.contains($0) }
+    return [allOwnersSentinel] + favInList + missingFavs + rest
+}
+
 // Serializes overlapping refreshes: each begin() hands out a higher generation,
 // and only the latest generation is allowed to write results back. Switching
 // owners starts a new generation, so an in-flight load can neither block the

@@ -141,9 +141,25 @@ final class PRStore: ObservableObject {
     @Published var prs: [PullRequest] = []
     @Published var owners: [String] = [allOwnersSentinel]
     @Published var selectedOwner: String = UserDefaults.standard.string(forKey: "selectedOwner") ?? allOwnersSentinel
+    @Published var favorites: [String] = UserDefaults.standard.stringArray(forKey: "favoriteOwners") ?? []
     @Published var errorText: String?
     @Published var isLoading = false
     @Published var lastUpdated: Date?
+
+    // Owners as shown in the dropdown: All, then favorites, then the rest.
+    var orderedOwners: [String] { orderOwners(owners, favorites: favorites) }
+
+    func isFavorite(_ owner: String) -> Bool { favorites.contains(owner) }
+
+    func toggleFavorite(_ owner: String) {
+        guard owner != allOwnersSentinel, !owner.isEmpty else { return }
+        if let i = favorites.firstIndex(of: owner) {
+            favorites.remove(at: i)
+        } else {
+            favorites.append(owner)
+        }
+        UserDefaults.standard.set(favorites, forKey: "favoriteOwners")
+    }
 
     private var myLogin: String?
     private var timer: Timer?
@@ -335,18 +351,31 @@ struct ContentView: View {
         .frame(width: 380)
     }
 
+    private var canFavorite: Bool { store.selectedOwner != allOwnersSentinel }
+
     private var header: some View {
         HStack(spacing: 8) {
             Picker("", selection: Binding(
                 get: { store.selectedOwner },
                 set: { store.select($0) }
             )) {
-                ForEach(store.owners, id: \.self) { owner in
-                    Text(owner == allOwnersSentinel ? "All orgs" : owner).tag(owner)
+                ForEach(store.orderedOwners, id: \.self) { owner in
+                    Text(label(for: owner)).tag(owner)
                 }
             }
             .labelsHidden()
-            .frame(maxWidth: 200)
+            .frame(maxWidth: 190)
+
+            Button {
+                store.toggleFavorite(store.selectedOwner)
+            } label: {
+                Image(systemName: store.isFavorite(store.selectedOwner) ? "star.fill" : "star")
+                    .foregroundColor(store.isFavorite(store.selectedOwner) ? .yellow : .secondary)
+            }
+            .buttonStyle(.plain)
+            .disabled(!canFavorite)
+            .opacity(canFavorite ? 1 : 0.35)
+            .help(store.isFavorite(store.selectedOwner) ? "Unfavorite" : "Favorite — pins it to the top")
 
             Spacer()
 
@@ -362,6 +391,11 @@ struct ContentView: View {
             .help("Refresh")
         }
         .padding(10)
+    }
+
+    private func label(for owner: String) -> String {
+        if owner == allOwnersSentinel { return "All orgs" }
+        return store.isFavorite(owner) ? "★ \(owner)" : owner
     }
 
     @ViewBuilder

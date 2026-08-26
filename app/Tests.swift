@@ -34,6 +34,7 @@ struct Tests {
         stackTests()
         decodeTests()
         coordinatorTests()
+        orderOwnersTests()
 
         print("")
         if failures == 0 {
@@ -122,6 +123,22 @@ struct Tests {
         let g3 = c.begin()
         check(!c.mayApply(g2), "older-but-not-oldest also blocked")
         check(c.mayApply(g3), "latest wins")
+    }
+
+    static func orderOwnersTests() {
+        print("orderOwners:")
+        let owners = [allOwnersSentinel, "acme", "beta", "Parsely", "zeta"]
+        let ordered = orderOwners(owners, favorites: ["Parsely", "zeta"])
+        check(ordered.first == allOwnersSentinel, "All still pinned first")
+        check(Array(ordered.dropFirst(1).prefix(2)) == ["Parsely", "zeta"], "favorites next, in list order")
+        check(ordered.suffix(2) == ["acme", "beta"], "non-favorites after")
+        check(Set(ordered) == Set(owners), "no owner lost or duplicated")
+
+        // A favorite with no open PRs right now (absent from owners) still shows.
+        let ordered2 = orderOwners([allOwnersSentinel, "acme"], favorites: ["ghost"])
+        check(ordered2.contains("ghost"), "favorite absent from results still surfaced")
+        check(orderOwners(owners, favorites: []) == owners, "no favorites -> unchanged")
+        check(!orderOwners(owners, favorites: [allOwnersSentinel]).dropFirst().contains(allOwnersSentinel), "All never duplicated as a favorite")
     }
 
     static func decodeTests() {

@@ -43,32 +43,35 @@ func buildGlyph() -> (cells: Set<Cell>, w: Int, h: Int) {
         }
     }
 
-    // Base branch (left): two nodes + straight line, center x = 6.5.
+    // Base branch (left): the trunk — a node top, a node bottom, straight line.
     dot(left: 3, top: 1)      // top-left node,    center (6.5, 4)
-    dot(left: 3, top: 19)     // bottom-left node, center (6.5, 22)
-    fillBox(5, 8, 3, 11)      // vertical line between the two nodes
+    dot(left: 3, top: 20)     // bottom-left node, center (6.5, 23)
+    fillBox(5, 8, 3, 12)      // continuous vertical trunk between the nodes
 
-    // Feature branch (right): two nodes + straight line, center x = 16.5.
-    dot(left: 13, top: 1)     // top-right node,    center (16.5, 4)
-    dot(left: 13, top: 19)    // bottom-right node, center (16.5, 22)
-    fillBox(15, 8, 3, 11)     // vertical line between the two nodes
+    // Feature branch (right): a node top, a short line, then a curve that
+    // merges into the trunk with a left-pointing arrowhead.
+    dot(left: 13, top: 1)     // top-right node, center (16.5, 4)
+    fillBox(15, 8, 3, 5)      // short vertical line below the node
 
-    // Pull/merge arrow: quarter circle from the lower base line sweeping up to
-    // the top-right node. center (6.5,7), r=10, from 90deg (6.5,17) to 0 (16.5,7).
-    arc(cx: 6.5, cy: 7, r: 10, from: .pi / 2, to: 0, thickness: 3)
-    // Arrowhead at the top-right end, pointing up into the top-right node.
-    for (dx, dy) in [(-1, 1), (-2, 1), (-2, 2), (1, 1), (2, 1), (2, 2), (0, 3), (-1, 3), (1, 3)] {
-        cells.insert(Cell(x: 16 + dx, y: 7 + dy))
+    // Merge curve: from the feature line (16.5,13) sweeping down-left into the
+    // trunk at (9,17). Control point pulls it around a clean quarter turn.
+    bezier((16.5, 13), (16.5, 17), (9, 17), thickness: 3)
+
+    // Arrowhead where the curve meets the trunk, pointing left into it.
+    for (dx, dy) in [(0, 0), (1, -1), (1, 0), (1, 1), (2, -2), (2, -1), (2, 0), (2, 1), (2, 2)] {
+        cells.insert(Cell(x: 8 + dx, y: 17 + dy))
     }
 
-    // Normalize to the content bounding box with a uniform 2-cell padding.
-    let pad = 2
+    // Normalize to the content bounding box. Extra horizontal padding brings
+    // the frame close to 1:1 (the glyph is tall); it centers the mark without
+    // shrinking its height — macOS fits a template icon to the menu bar height.
+    let hpad = 6, vpad = 2
     let minX = cells.map(\.x).min()!, maxX = cells.map(\.x).max()!
     let minY = cells.map(\.y).min()!, maxY = cells.map(\.y).max()!
     var shifted = Set<Cell>()
-    for c in cells { shifted.insert(Cell(x: c.x - minX + pad, y: c.y - minY + pad)) }
-    let w = (maxX - minX + 1) + pad * 2
-    let h = (maxY - minY + 1) + pad * 2
+    for c in cells { shifted.insert(Cell(x: c.x - minX + hpad, y: c.y - minY + vpad)) }
+    let w = (maxX - minX + 1) + hpad * 2
+    let h = (maxY - minY + 1) + vpad * 2
     return (shifted, w, h)
 }
 

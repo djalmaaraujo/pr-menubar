@@ -1,0 +1,21 @@
+docs/superpowers/specs/2026-08-26-pr-menubar-design.md
+  s_3960be77cd17dc::t_88716b18777e59 1-197
+.gitignore
+  s_3960be77cd17dc::t_2cb9970d416135 1-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "8a5df7a24a66781228452807f7eec69cef8f67e2",
+  "prompts": {},
+  "sessions": {
+    "s_3960be77cd17dc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a9f947c8-317a-4cfe-af1b-9f76a4382119",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}

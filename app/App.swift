@@ -548,7 +548,7 @@ struct PRBarApp: App {
                     Image(nsImage: menuBarMark)
                 }
                 if store.errorText == nil && store.openCount > 0 {
-                    Text("\(store.openCount)")
+                    Text(verbatim: "\(store.openCount)")
                 }
             }
         }

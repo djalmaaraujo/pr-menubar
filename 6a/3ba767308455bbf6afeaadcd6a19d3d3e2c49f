@@ -1,0 +1,26 @@
+app/App.swift
+  s_3960be77cd17dc::t_26d45880f780ff 150-152,154,164,167-170,176-177,179,184,187,189,193
+  s_3960be77cd17dc::t_4de1ae6ecb8445 153
+  s_3960be77cd17dc::t_c6a7c46875c3e3 175,188,192,199,202
+app/PRCore.swift
+  s_3960be77cd17dc::t_4869587b550485 129-141
+app/Tests.swift
+  s_3960be77cd17dc::t_5c4942b5120118 36
+  s_3960be77cd17dc::t_fa4dd02d38d84a 109-126
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "6a3ba767308455bbf6afeaadcd6a19d3d3e2c49f",
+  "prompts": {},
+  "sessions": {
+    "s_3960be77cd17dc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a9f947c8-317a-4cfe-af1b-9f76a4382119",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Djalma Araújo <djalma@nossomos.cc>"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+app/make_icon.swift
+  h_4716746d570273 46,48-49,51-54,56-62,65-68,72-74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "44c16c1be3f70af299f4e00313a28f64ec81d500",
+  "prompts": {},
+  "humans": {
+    "h_4716746d570273": {
+      "author": "Djalma Araújo <djalma@nossomos.cc>"
+    }
+  }
+}

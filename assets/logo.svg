@@ -1,4 +1,4 @@
-<svg width="640" height="220" viewBox="0 0 640 220" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PR Bar logo">
+<svg width="640" height="220" viewBox="0 0 640 220" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PR Menubar logo">
   <defs>
     <linearGradient id="strokeGrad" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#22d3ee"/>
@@ -25,7 +25,7 @@
   </g>
 
   <!-- Wordmark -->
-  <text x="210" y="126" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="66" font-weight="800" fill="#e2e8f0">PR Bar</text>
+  <text x="210" y="126" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="56" font-weight="800" fill="#e2e8f0">PR Menubar</text>
 
   <!-- Tagline -->
   <text x="212" y="160" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="17" fill="#94a3b8">your open PRs, right in the menu bar</text>

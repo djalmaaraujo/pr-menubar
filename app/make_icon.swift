@@ -1,6 +1,6 @@
 import AppKit
 
-// PR Bar icon generator. Renders a pixel-art "pull request" glyph:
+// PR Menubar icon generator. Renders a pixel-art "pull request" glyph:
 //   base branch (left) = dot top + dot bottom + vertical line;
 //   feature branch (right) = dot top + short line + a quarter-circle that
 //   sweeps down-left and merges into the base branch's bottom dot.

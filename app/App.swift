@@ -549,7 +549,7 @@ func loadMenuBarImage() -> NSImage {
 let menuBarMark = loadMenuBarImage()
 
 @main
-struct PRBarApp: App {
+struct PRMenubarApp: App {
     @StateObject private var store = PRStore()
 
     var body: some Scene {

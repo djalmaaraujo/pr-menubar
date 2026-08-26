@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleExecutable</key>
-	<string>PRBar</string>
+	<string>PRMenubar</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.djalma.prbar</string>
 	<key>CFBundleName</key>
-	<string>PR Bar</string>
+	<string>PR Menubar</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

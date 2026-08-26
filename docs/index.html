@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PR Bar — your open pull requests, live in the menu bar</title>
+<title>PR Menubar — your open pull requests, live in the menu bar</title>
 <meta name="description" content="A native macOS menu bar app that lists your open GitHub pull requests. Reads from the gh CLI you already have. Zero dependencies, free and open source.">
 <style>
   :root {
@@ -131,10 +131,10 @@
 <main>
 
   <section class="hero">
-    <img class="logo" src="assets/logo.svg" alt="PR Bar logo">
+    <img class="logo" src="assets/logo.svg" alt="PR Menubar logo">
     <h1>Your open pull requests,<br><span class="accent">live in the menu bar.</span></h1>
 
-    <img class="hero-shot" src="assets/screenshot-main.png" alt="PR Bar popover open in the menu bar, listing open pull requests with state, repository, and CI status">
+    <img class="hero-shot" src="assets/screenshot-main.png" alt="PR Menubar popover open in the menu bar, listing open pull requests with state, repository, and CI status">
 
     <p class="tagline" style="margin: 0 auto;">Reads straight from the <code class="inline">gh</code> CLI on your machine — no token of its own, no server, no browser cookie.</p>
 
@@ -183,7 +183,7 @@
 
   <section>
     <h2>How it works</h2>
-    <p>PR Bar shells out to the <code class="inline">gh</code> binary you already have installed and authenticated. It runs <code class="inline">gh search prs --author=@me --state=open</code> to list your PRs, then enriches each one with <code class="inline">gh pr view</code> for its CI status and branch names. Nothing else talks to GitHub, and the credentials are entirely <code class="inline">gh</code>'s own.</p>
+    <p>PR Menubar shells out to the <code class="inline">gh</code> binary you already have installed and authenticated. It runs <code class="inline">gh search prs --author=@me --state=open</code> to list your PRs, then enriches each one with <code class="inline">gh pr view</code> for its CI status and branch names. Nothing else talks to GitHub, and the credentials are entirely <code class="inline">gh</code>'s own.</p>
   </section>
 
   <section>
@@ -197,7 +197,7 @@
     <div class="install-row">
       <code>git clone https://github.com/djalmaaraujo/pr-menubar &amp;&amp; cd pr-menubar/app &amp;&amp; ./build.sh</code>
     </div>
-    <p style="margin-top: 24px;">The build script compiles, packages <code class="inline">PRBar.app</code>, ad-hoc signs it, and opens it. Drag it into <code class="inline">/Applications</code> to keep it around.</p>
+    <p style="margin-top: 24px;">The build script compiles, packages <code class="inline">PRMenubar.app</code>, ad-hoc signs it, and opens it. Drag it into <code class="inline">/Applications</code> to keep it around.</p>
   </section>
 
   <section>

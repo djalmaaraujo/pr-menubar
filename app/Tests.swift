@@ -33,6 +33,7 @@ struct Tests {
         mergeOwnersTests()
         stackTests()
         decodeTests()
+        coordinatorTests()
 
         print("")
         if failures == 0 {
@@ -103,6 +104,24 @@ struct Tests {
             pr(2, repo: "r/r", head: "y", base: "x"),
         ]
         check(buildStackForest(cyclic).count == 2, "cycle does not drop or hang")
+    }
+
+    static func coordinatorTests() {
+        print("RefreshCoordinator:")
+        var c = RefreshCoordinator()
+        let g1 = c.begin()
+        check(c.mayApply(g1), "sole in-flight refresh may apply")
+
+        // Reproduces the reported bug: an owner switch starts a newer refresh
+        // while the first (e.g. the launch load of "All") is still awaiting gh.
+        let g2 = c.begin()
+        check(!c.mayApply(g1), "superseded refresh may NOT apply (no stale overwrite)")
+        check(c.mayApply(g2), "newest refresh may apply")
+
+        // A third supersedes the second in turn.
+        let g3 = c.begin()
+        check(!c.mayApply(g2), "older-but-not-oldest also blocked")
+        check(c.mayApply(g3), "latest wins")
     }
 
     static func decodeTests() {

@@ -147,6 +147,11 @@ final class PRStore: ObservableObject {
 
     private var myLogin: String?
     private var timer: Timer?
+    // Every refresh gets a generation number; only the newest one is allowed to
+    // mutate state. This makes switching owners cancel-and-supersede an in-flight
+    // load instead of being dropped by it (or being clobbered when it lands).
+    private var coordinator = RefreshCoordinator()
+    private var refreshTask: Task<Void, Never>?
 
     init() {
         refresh()
@@ -156,32 +161,45 @@ final class PRStore: ObservableObject {
     }
 
     func select(_ owner: String) {
+        guard owner != selectedOwner else { return }
         selectedOwner = owner
         UserDefaults.standard.set(owner, forKey: "selectedOwner")
+        // Drop the previous owner's list right away so the popover shows a
+        // loading state, not stale results from the org we just left.
+        prs = []
+        errorText = nil
         refresh()
     }
 
     func refresh() {
-        guard !isLoading else { return }
+        let gen = coordinator.begin()
+        let owner = selectedOwner
+        refreshTask?.cancel()
         isLoading = true
-        Task {
+        refreshTask = Task {
             do {
                 if myLogin == nil {
                     myLogin = try? await Self.fetchLogin()
                 }
-                let search = try await Self.search(owner: selectedOwner)
+                let search = try await Self.search(owner: owner)
                 let details = try await Self.enrich(search)
+
+                // A newer refresh started while we were awaiting — let it win.
+                guard coordinator.mayApply(gen) else { return }
 
                 let resultOwners = search.map { $0.repository.nameWithOwner.split(separator: "/").first.map(String.init) ?? "" }
                 let orgs = (try? await Self.fetchOrgs()) ?? []
+                guard coordinator.mayApply(gen) else { return }
+
                 self.owners = mergeOwners(orgs: orgs, resultOwners: resultOwners, myLogin: myLogin)
                 self.prs = details
                 self.errorText = nil
                 self.lastUpdated = Date()
             } catch {
+                guard coordinator.mayApply(gen) else { return }
                 self.errorText = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
             }
-            self.isLoading = false
+            if coordinator.mayApply(gen) { self.isLoading = false }
         }
     }
 

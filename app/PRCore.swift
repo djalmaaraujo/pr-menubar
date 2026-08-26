@@ -126,6 +126,19 @@ func mergeOwners(orgs: [String], resultOwners: [String], myLogin: String?) -> [S
     return [allOwnersSentinel] + set.sorted { $0.lowercased() < $1.lowercased() }
 }
 
+// Serializes overlapping refreshes: each begin() hands out a higher generation,
+// and only the latest generation is allowed to write results back. Switching
+// owners starts a new generation, so an in-flight load can neither block the
+// switch nor clobber its results when it finally lands.
+struct RefreshCoordinator {
+    private(set) var generation = 0
+    mutating func begin() -> Int {
+        generation += 1
+        return generation
+    }
+    func mayApply(_ gen: Int) -> Bool { gen == generation }
+}
+
 // Order PRs so stacked chains read as a tree. Within one repo, PR B is a child
 // of PR A when B.baseRefName == A.headRefName. Returns (pr, depth) in
 // depth-first order; roots (base not produced by any sibling) sorted by number.
